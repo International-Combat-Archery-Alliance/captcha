@@ -24,12 +24,14 @@ type HTTPDoer interface {
 }
 
 type Validator struct {
-	client HTTPDoer
+	client    HTTPDoer
+	secretKey string
 }
 
-func NewValidator(client HTTPDoer) *Validator {
+func NewValidator(client HTTPDoer, secretKey string) *Validator {
 	return &Validator{
-		client: client,
+		client:    client,
+		secretKey: secretKey,
 	}
 }
 
@@ -37,7 +39,7 @@ func (v *Validator) Validate(ctx context.Context, token string, remoteip string)
 	idempotencyKey := uuid.New()
 
 	form := url.Values{
-		"secret":          {"TODO"},
+		"secret":          {v.secretKey},
 		"response":        {token},
 		"idempotency_key": {idempotencyKey.String()},
 	}
